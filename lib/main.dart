@@ -34,7 +34,29 @@ class _HomeState extends State<Home> {
 
 double dollar;
 double euro;
+double real;
+TextEditingController controladorReal = TextEditingController();
+TextEditingController controladorDolar = TextEditingController();
+TextEditingController controladorEuro = TextEditingController();
 
+
+void onChangeReal(String text){
+
+    double real = double.parse(text);
+    this.controladorDolar.text = (real/this.dollar).toStringAsFixed(2);
+    this.controladorEuro.text = (real/this.euro).toStringAsFixed(2);
+
+}void onChangeDolar(String text){
+      double dollar = double.parse(text);
+      this.controladorReal.text = (dollar*this.dollar).toStringAsFixed(2);
+      this.controladorEuro.text = (dollar*this.dollar/this.euro).toStringAsFixed(2);
+
+
+}void onChangeEuro(String text){
+      double euro = double.parse(text);
+      this.controladorReal.text = (euro*this.euro).toStringAsFixed(2);
+      this.controladorDolar.text = (euro*this.euro/this.dollar).toStringAsFixed(2);
+}
 
 @override
 Widget build(BuildContext context) {
@@ -70,50 +92,13 @@ return Scaffold(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
                               Icon(Icons.monetization_on,size:150.0, color:Colors.amber),
-                              TextField(
-                                decoration: InputDecoration(
-
-                                      labelText: "Reais",
-                                      labelStyle: TextStyle(
-                                          color: Colors.amber
-                                      ),
-                                       border: OutlineInputBorder(),
-                                      prefixText: "R\$ "
-
-                                ),
-                                style: TextStyle(color: Colors.white),
-
-                              ),
-
+                             buildTextFild("Reais", "R\$",controladorReal,onChangeReal),
                               Divider(),
-                                                      TextField(
-                                decoration: InputDecoration(
+                              buildTextFild("Dolares", "US\$",controladorDolar,onChangeDolar),              
+                               Divider(),
+                              buildTextFild("Euros", "euros: ",controladorEuro,onChangeEuro),              
 
-                                      labelText: "Dólares",
-                                      labelStyle: TextStyle(
-                                          color: Colors.amber
-                                      ),
-                                       border: OutlineInputBorder(),
-                                      prefixText: "US\$ "
 
-                                ),
-                                style: TextStyle(color: Colors.white),
-
-                              ),
-                                        Divider(),                    TextField(
-                                decoration: InputDecoration(
-
-                                      labelText: "Euros",
-                                      labelStyle: TextStyle(
-                                          color: Colors.amber
-                                      ),
-                                       border: OutlineInputBorder(),
-                                      prefixText: "euros "
-
-                                ),
-                                style: TextStyle(color: Colors.white),
-
-                              )  
                           ],)
 
                       ],
@@ -131,9 +116,33 @@ return Scaffold(
 
 
 
-
 Future<Map>  getData() async{
 
   http.Response response = await http.get(url);
   return json.decode(response.body);
 }
+
+
+
+
+Widget buildTextFild(String label, String prefix,TextEditingController controlador,Function onchange){
+
+  return   TextField(
+                                decoration: InputDecoration(
+
+                                      labelText: label,
+                                      labelStyle: TextStyle(
+                                          color: Colors.amber
+                                      ),
+                                       border: OutlineInputBorder(),
+                                      prefixText: prefix
+
+                                ),
+                                style: TextStyle(color: Colors.white),
+                              controller: controlador,
+                              onChanged: onchange,
+                              keyboardType: TextInputType.number,
+                              )  ;
+}
+
+
